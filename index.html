@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Voz Realista - Powered by ElevenLabs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Gerador de Voz Ultra-Realista</h1>
+            <p class="text-gray-600">Powered by ElevenLabs AI - Clerdomy Zidor</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+            <!-- API Key Input -->
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="apiKey">
+                    ElevenLabs API Key:
+                </label>
+                <input 
+                    type="password" 
+                    id="apiKey" 
+                    class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Digite sua API key do ElevenLabs"
+                >
+            </div>
+
+            <!-- Text Input -->
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="text">
+                    Texto para converter:
+                </label>
+                <textarea 
+                    id="text" 
+                    rows="4" 
+                    class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                    placeholder="Digite o texto que você deseja converter em voz..."
+                ></textarea>
+            </div>
+
+            <!-- Voice Selection -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Voice Type -->
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Selecione a Voz:
+                    </label>
+                    <select id="voiceId" class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option value="21m00Tcm4TlvDq8ikWAM">Rachel - Voz Feminina (EN)</option>
+                        <option value="29vD33N1CtxCmqQRPOHJ">Gabriel - Voz Masculina (PT-BR)</option>
+                        <option value="AZnzlk1XvdvUeBnXmlld">Domi - Voz Feminina (EN)</option>
+                        <option value="MF3mGyEYCl7XYWbV9V6O">Adam - Voz Masculina (EN)</option>
+                    </select>
+                </div>
+
+                <!-- Stability and Similarity -->
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Estabilidade da Voz: <span id="stabilityValue">0.75</span>
+                    </label>
+                    <input 
+                        type="range" 
+                        id="stability" 
+                        min="0" 
+                        max="1" 
+                        step="0.05" 
+                        value="0.75"
+                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    >
+                </div>
+            </div>
+
+            <!-- Advanced Settings -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Similarity Boost -->
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Similaridade: <span id="similarityValue">0.75</span>
+                    </label>
+                    <input 
+                        type="range" 
+                        id="similarity" 
+                        min="0" 
+                        max="1" 
+                        step="0.05" 
+                        value="0.75"
+                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    >
+                </div>
+
+                <!-- Style -->
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Intensidade do Estilo: <span id="styleValue">0.7</span>
+                    </label>
+                    <input 
+                        type="range" 
+                        id="style" 
+                        min="0" 
+                        max="1" 
+                        step="0.05" 
+                        value="0.7"
+                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    >
+                </div>
+            </div>
+
+            <!-- Emotion Selection -->
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2">
+                    Emoção:
+                </label>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button class="emotion-btn px-4 py-2 rounded-lg border hover:bg-purple-50 transition-colors" data-emotion="neutral">
+                        😐 Neutro
+                    </button>
+                    <button class="emotion-btn px-4 py-2 rounded-lg border hover:bg-purple-50 transition-colors" data-emotion="happy">
+                        😊 Feliz
+                    </button>
+                    <button class="emotion-btn px-4 py-2 rounded-lg border hover:bg-purple-50 transition-colors" data-emotion="sad">
+                        😢 Triste
+                    </button>
+                    <button class="emotion-btn px-4 py-2 rounded-lg border hover:bg-purple-50 transition-colors" data-emotion="excited">
+                        🎉 Empolgado
+                    </button>
+                </div>
+            </div>
+
+            <!-- Audio Preview -->
+            <div class="mb-6">
+                <audio id="audioPlayer" controls class="w-full" style="display: none;">
+                    Seu navegador não suporta o elemento de áudio.
+                </audio>
+            </div>
+
+            <!-- Control Buttons -->
+            <div class="flex flex-wrap gap-4 justify-center">
+                <button id="generateButton" class="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center">
+                    <i class="fas fa-magic mr-2"></i> Gerar Voz
+                </button>
+                <button id="downloadButton" class="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center" disabled>
+                    <i class="fas fa-download mr-2"></i> Baixar
+                </button>
+            </div>
+
+            <!-- Status -->
+            <div id="status" class="mt-6 text-center text-gray-600">
+                Digite seu texto e configure as opções para gerar uma voz realista
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elementos do DOM
+        const apiKeyInput = document.getElementById('apiKey');
+        const textInput = document.getElementById('text');
+        const voiceSelect = document.getElementById('voiceId');
+        const stabilityInput = document.getElementById('stability');
+        const similarityInput = document.getElementById('similarity');
+        const styleInput = document.getElementById('style');
+        const generateButton = document.getElementById('generateButton');
+        const downloadButton = document.getElementById('downloadButton');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const status = document.getElementById('status');
+
+        // Atualizar valores dos controles
+        function updateValue(inputId, valueId) {
+            const input = document.getElementById(inputId);
+            const value = document.getElementById(valueId);
+            value.textContent = input.value;
+        }
+
+        stabilityInput.addEventListener('input', () => updateValue('stability', 'stabilityValue'));
+        similarityInput.addEventListener('input', () => updateValue('similarity', 'similarityValue'));
+        styleInput.addEventListener('input', () => updateValue('style', 'styleValue'));
+
+        // Seleção de emoção
+        document.querySelectorAll('.emotion-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.emotion-btn').forEach(btn => 
+                    btn.classList.remove('bg-purple-100', 'border-purple-500'));
+                button.classList.add('bg-purple-100', 'border-purple-500');
+            });
+        });
+
+        // Função para gerar voz usando ElevenLabs API
+        async function generateVoice() {
+            const apiKey = apiKeyInput.value;
+            if (!apiKey) {
+                status.textContent = 'Por favor, insira sua API key do ElevenLabs';
+                return;
+            }
+
+            const text = textInput.value.trim();
+            if (!text) {
+                status.textContent = 'Por favor, digite algum texto';
+                return;
+            }
+
+            status.textContent = 'Gerando voz...';
+            generateButton.disabled = true;
+            downloadButton.disabled = true;
+
+            const voiceId = voiceSelect.value;
+            const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+
+            const headers = {
+                'Accept': 'audio/mpeg',
+                'Content-Type': 'application/json',
+                'xi-api-key': apiKey
+            };
+
+            const body = {
+                text: text,
+                model_id: 'eleven_multilingual_v2',
+                voice_settings: {
+                    stability: parseFloat(stabilityInput.value),
+                    similarity_boost: parseFloat(similarityInput.value),
+                    style: parseFloat(styleInput.value)
+                }
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(body)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                audioPlayer.src = audioUrl;
+                audioPlayer.style.display = 'block';
+                audioPlayer.play();
+
+                downloadButton.disabled = false;
+                status.textContent = 'Voz gerada com sucesso!';
+
+                // Configurar download
+                downloadButton.onclick = () => {
+                    const a = document.createElement('a');
+                    a.href = audioUrl;
+                    a.download = 'voz-gerada.mp3';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                };
+
+            } catch (error) {
+                console.error('Erro:', error);
+                status.textContent = 'Erro ao gerar voz. Verifique sua API key e tente novamente.';
+            } finally {
+                generateButton.disabled = false;
+            }
+        }
+
+        // Event Listeners
+        generateButton.addEventListener('click', generateVoice);
+
+        // Salvar API Key no localStorage
+        apiKeyInput.value = localStorage.getItem('elevenLabsApiKey') || '';
+        apiKeyInput.addEventListener('change', () => {
+            localStorage.setItem('elevenLabsApiKey', apiKeyInput.value);
+        });
+    </script>
+</body>
+</html>
